@@ -1,0 +1,4 @@
+grnautologin
+============
+
+auto login garoon
