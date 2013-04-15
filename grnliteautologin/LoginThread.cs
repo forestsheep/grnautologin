@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections;
+using System.Net;
 
 namespace GrnLiteAutoLogin
 {
@@ -77,6 +78,12 @@ namespace GrnLiteAutoLogin
                 catch (HttpAccesser.UncompleteSettingException unse)
                 {
                     OnLoginEventHandler(unse.ToString() + "\r\n" + "访问失败！\r\n");
+                    Thread.Sleep(50);
+                }
+                catch (WebException we)
+                {
+                    we.ToString();
+                    OnLoginEventHandler("访问网站失败，有可能是网络连接问题" + "\r\n");
                     Thread.Sleep(50);
                 }
             }

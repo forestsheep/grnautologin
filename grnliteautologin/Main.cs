@@ -45,8 +45,8 @@ namespace GrnLiteAutoLogin
 
         private void btnRunLogin_Click(object sender, EventArgs e)
         {
-            //this.AutoRun();
-            this.outputArea.AppendText(AccountManager.GetInstance.Count.ToString());
+            this.AutoRun();
+            //this.outputArea.AppendText(AccountManager.GetInstance.Count.ToString());
         }
 
         protected void TextShow(object sender, EventArgs e)
