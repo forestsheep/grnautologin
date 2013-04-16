@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Net;
 using System.IO;
-using System.Text;
+using System.Net;
 using System.Resources;
+using System.Text;
 
 namespace GrnLiteAutoLogin
 {
@@ -27,6 +27,7 @@ namespace GrnLiteAutoLogin
         private string accessUrl;
         private string contentType;
         private string urlParam = string.Empty;
+        private string responseDate = string.Empty;
         private string responseText = string.Empty;
         private bool isUseCookie;
         private string reqEncoding = GrnLiteAutoLogin.Properties.Resources.UTF8;
@@ -97,6 +98,15 @@ namespace GrnLiteAutoLogin
             {
                 contentType = value;
             }
+        }
+        
+        /// <summary>
+        /// response date
+        /// </summary>
+        internal string ResponseDate
+        {
+            get { return responseDate; }
+            set { responseDate = value; }
         }
 
         /// <summary>
@@ -199,26 +209,20 @@ namespace GrnLiteAutoLogin
                     reqStream.Write(bs, 0, bs.Length);
                 }
             }
-            try
+            using (WebResponse res = req.GetResponse())
             {
-                using (WebResponse res = req.GetResponse())
+                this.responseDate = res.Headers.GetValues("Date")[0];
+                Stream receiveStream = res.GetResponseStream();
+                Encoding encode = Encoding.GetEncoding(resEncoding);
+                StreamReader sr = new StreamReader(receiveStream, encode);
+                char[] readbuffer = new char[256];
+                int n = sr.Read(readbuffer, 0, 256);
+                while (n > 0)
                 {
-                    Stream receiveStream = res.GetResponseStream();
-                    Encoding encode = Encoding.GetEncoding(resEncoding);
-                    StreamReader sr = new StreamReader(receiveStream, encode);
-                    char[] readbuffer = new char[256];
-                    int n = sr.Read(readbuffer, 0, 256);
-                    while (n > 0)
-                    {
-                        string str = new string(readbuffer, 0, n);
-                        responseText += str;
-                        n = sr.Read(readbuffer, 0, 256);
-                    }
+                    string str = new string(readbuffer, 0, n);
+                    responseText += str;
+                    n = sr.Read(readbuffer, 0, 256);
                 }
-            }
-            catch (WebException we)
-            {
-                throw we;
             }
         }
         #endregion

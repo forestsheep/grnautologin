@@ -67,7 +67,9 @@ namespace GrnLiteAutoLogin
                     Thread.Sleep(2000);
                     if (ha.ResponseText.Contains("<title>门户</title>"))
                     {
-                        OnLoginEventHandler("访问成功！\r\n");
+                        DateTime dt = new DateTime();
+                        dt = DateTime.Parse(ha.ResponseDate);
+                        OnLoginEventHandler(dt.ToString("yyyy年MM月dd日HH时mm分ss秒") + " 访问成功！\r\n");
                     }
                     else
                     {
