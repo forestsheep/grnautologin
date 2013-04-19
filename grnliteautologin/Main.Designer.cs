@@ -122,11 +122,13 @@
             this.Controls.Add(this.checkedListBox_accounts);
             this.Controls.Add(this.outputArea);
             this.Controls.Add(this.btnRunLogin);
+            this.KeyPreview = true;
             this.Name = "Main";
             this.Text = "GaroonLite自动登录";
             this.Activated += new System.EventHandler(this.Main_Activated);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Main_FormClosed);
             this.Load += new System.EventHandler(this.Main_Load);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.Main_KeyPress);
             this.ResumeLayout(false);
             this.PerformLayout();
 

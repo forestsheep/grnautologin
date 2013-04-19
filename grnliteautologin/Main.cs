@@ -26,7 +26,8 @@ namespace GrnLiteAutoLogin
         #endregion
 
         #region 事件
-
+        System.Timers.Timer autoLoginTimer = new System.Timers.Timer();
+        private Boolean autoRunning = false;
         private void Main_Load(object sender, EventArgs e)
         {
             // 读取账号信息
@@ -34,19 +35,26 @@ namespace GrnLiteAutoLogin
 
             // 读取是否自动运行
             cbAutoRun.Checked = SettingManager.GetInstance.AutoRun;
-
-            // 自动运行
+            // timer test
             if (cbAutoRun.Checked)
             {
-                this.AutoRun();
+                autoLoginTimer.Interval = 5000;
+                autoLoginTimer.AutoReset = false;
+                autoLoginTimer.Elapsed += new System.Timers.ElapsedEventHandler(daka);
+                autoLoginTimer.Start();
+                autoRunning = true;
+                this.outputArea.AppendText("5秒后自动打卡，按任意键取消。。。\r\n");
             }
+        }
 
+        private void daka(object source, System.Timers.ElapsedEventArgs e)
+        {
+            this.AutoRun();
         }
 
         private void btnRunLogin_Click(object sender, EventArgs e)
         {
             this.AutoRun();
-            //this.outputArea.AppendText(AccountManager.GetInstance.Count.ToString());
         }
 
         protected void TextShow(object sender, EventArgs e)
@@ -90,6 +98,7 @@ namespace GrnLiteAutoLogin
         private void Main_Activated(object sender, EventArgs e)
         {
             this.ReLoadAccounts();
+            this.outputArea.Focus();
         }
 
         /// <summary>
@@ -187,6 +196,7 @@ namespace GrnLiteAutoLogin
             }
             return al;
         }
+
         
         /// <summary>
         /// 自动运行登录
@@ -197,6 +207,7 @@ namespace GrnLiteAutoLogin
             {
                 this.lt = new LoginThread();
                 lt.Login += this.OnLogin;
+                this.Login += this.OnLogin;
             }
             try
             {
@@ -208,12 +219,16 @@ namespace GrnLiteAutoLogin
                 else
                 {
                     // 账号未输入
-                    outputArea.AppendText(Properties.Resources.NONE_ACCOUNT + "\r\n");
+                    OnLoginEventHandler(Properties.Resources.NONE_ACCOUNT + "\r\n");
                 }
             }
             catch (Exception ee)
             {
-                outputArea.AppendText(ee.ToString() + "\r\n");
+                OnLoginEventHandler(ee.ToString() + "\r\n");
+            }
+            finally
+            {
+                autoRunning = false;
             }
         }
 
@@ -236,6 +251,19 @@ namespace GrnLiteAutoLogin
             }
         }
 
+        private LoginEventHandler OnLoginEventHandler;
+        internal event LoginEventHandler Login
+        {
+            add
+            {
+                OnLoginEventHandler += new LoginEventHandler(value);
+            }
+            remove
+            {
+                OnLoginEventHandler -= new LoginEventHandler(value);
+            }
+        }
+
         private void OnLogin(string s)
         {
             logMessage = s;
@@ -244,5 +272,14 @@ namespace GrnLiteAutoLogin
         }
         #endregion
 
+        private void Main_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (autoRunning)
+            {
+                autoLoginTimer.Stop();
+                autoRunning = false;
+                this.outputArea.AppendText("本次自动打卡已取消。\r\n");
+            }
+        }
     }
 }
