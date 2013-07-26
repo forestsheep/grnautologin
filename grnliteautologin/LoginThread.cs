@@ -65,7 +65,7 @@ namespace GrnLiteAutoLogin
                     OnLoginEventHandler("正在尝试访问网站...\r\n");
                     ha.access();
                     Thread.Sleep(2000);
-                    if (ha.ResponseText.Contains("<title>门户</title>"))
+                    if (ha.ResponseText.Contains("href=\"javascript:logout()\""))
                     {
                         DateTime dt = new DateTime();
                         dt = DateTime.Parse(ha.ResponseDate);
